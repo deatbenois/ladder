@@ -36,8 +36,9 @@ func loadConfig() *Config {
 
 	userAgent := os.Getenv("PROXY_USER_AGENT")
 	if userAgent == "" {
-		// Mimic a real browser UA to reduce likelihood of being blocked by target sites
-		userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+		// Using a recent Firefox UA as an alternative to the Chrome one;
+		// some sites respond better to Firefox user agents in my experience.
+		userAgent = "Mozilla/5.0 (X11; Linux x86_64; rv:126.0) Gecko/20100101 Firefox/126.0"
 	}
 
 	return &Config{
