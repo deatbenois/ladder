@@ -36,7 +36,8 @@ func loadConfig() *Config {
 
 	userAgent := os.Getenv("PROXY_USER_AGENT")
 	if userAgent == "" {
-		userAgent = "Mozilla/5.0 (compatible; Ladder/1.0)"
+		// Mimic a real browser UA to reduce likelihood of being blocked by target sites
+		userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
 	}
 
 	return &Config{
@@ -67,7 +68,8 @@ func main() {
 
 	// Channel to listen for OS signals for graceful shutdown.
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)\n
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+
 	go func() {
 		log.Printf("Ladder listening on port %s", cfg.Port)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
