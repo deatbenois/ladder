@@ -45,7 +45,8 @@ func DefaultConfig() *Config {
 	return &Config{
 		Port:          8080,
 		Host:          "",
-		Timeout:       30 * time.Second,
+		// Increased from 30s to 60s — some sites I proxy are slow to respond.
+		Timeout:       60 * time.Second,
 		AllowedHosts:  []string{},
 		BlockedHosts:  []string{},
 		UserAgent:     "Mozilla/5.0 (compatible; Ladder/1.0)",
@@ -124,30 +125,4 @@ func LoadFromEnv() (*Config, error) {
 }
 
 // Validate checks that the configuration values are sensible.
-func (c *Config) Validate() error {
-	if c.Port < 1 || c.Port > 65535 {
-		return fmt.Errorf("port %d is out of valid range (1-65535)", c.Port)
-	}
-	if c.Timeout <= 0 {
-		return fmt.Errorf("timeout must be positive, got %s", c.Timeout)
-	}
-	return nil
-}
-
-// Addr returns the host:port string for the server to listen on.
-func (c *Config) Addr() string {
-	return fmt.Sprintf("%s:%d", c.Host, c.Port)
-}
-
-// splitTrimmed splits s by sep and trims whitespace from each element,
-// omitting empty strings.
-func splitTrimmed(s, sep string) []string {
-	parts := strings.Split(s, sep)
-	result := make([]string, 0, len(parts))
-	for _, p := range parts {
-		if t := strings.TrimSpace(p); t != "" {
-			result = append(result, t)
-		}
-	}
-	return result
-}
+func (c *Conf
