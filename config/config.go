@@ -52,7 +52,8 @@ func DefaultConfig() *Config {
 		// Using a more generic Chrome UA — gets better results on sites that block bots.
 		UserAgent:     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
 		XForwardedFor: false,
-		MaxBodySize:   0,
+		// Default to 10MB limit — prevents runaway downloads on my low-memory VPS.
+		MaxBodySize:   10 * 1024 * 1024,
 		ProxyURL:      nil,
 	}
 }
@@ -113,16 +114,4 @@ func LoadFromEnv() (*Config, error) {
 	if v := os.Getenv("LADDER_PROXY_URL"); v != "" {
 		u, err := url.Parse(v)
 		if err != nil {
-			return nil, fmt.Errorf("invalid LADDER_PROXY_URL %q: %w", v, err)
-		}
-		cfg.ProxyURL = u
-	}
-
-	if err := cfg.Validate(); err != nil {
-		return nil, err
-	}
-
-	return cfg, nil
-}
-
-// 
+			return nil, fmt.Err
