@@ -100,6 +100,18 @@ func TestLoadFromEnv(t *testing.T) {
 			t.Errorf("expected user agent 'MyCustomAgent/1.0', got '%s'", cfg.UserAgent)
 		}
 	})
+
+	// PORT=0 should be treated as invalid since binding to port 0 is not useful here.
+	t.Run("PORT=0 returns error", func(t *testing.T) {
+		clearEnv()
+		os.Setenv("PORT", "0")
+		defer os.Unsetenv("PORT")
+
+		_, err := LoadFromEnv()
+		if err == nil {
+			t.Error("expected error for PORT=0, got nil")
+		}
+	})
 }
 
 func TestSplitTrimmed(t *testing.T) {
@@ -126,21 +138,5 @@ func TestSplitTrimmed(t *testing.T) {
 				t.Errorf("splitTrimmed(%q)[%d]: expected %q, got %q", tc.input, i, tc.expected[i], v)
 			}
 		}
-	}
-}
-
-// clearEnv removes all known config-related environment variables to ensure
-// a clean state for each test.
-func clearEnv() {
-	vars := []string{
-		"PORT",
-		"TIMEOUT",
-		"ALLOWED_HOSTS",
-		"BLOCKED_HOSTS",
-		"USER_AGENT",
-		"PROXY_URL",
-	}
-	for _, v := range vars {
-		os.Unsetenv(v)
 	}
 }
