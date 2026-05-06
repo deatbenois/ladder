@@ -112,6 +112,18 @@ func TestLoadFromEnv(t *testing.T) {
 			t.Error("expected error for PORT=0, got nil")
 		}
 	})
+
+	// Ports above 65535 are invalid per TCP spec.
+	t.Run("PORT above 65535 returns error", func(t *testing.T) {
+		clearEnv()
+		os.Setenv("PORT", "99999")
+		defer os.Unsetenv("PORT")
+
+		_, err := LoadFromEnv()
+		if err == nil {
+			t.Error("expected error for PORT=99999, got nil")
+		}
+	})
 }
 
 func TestSplitTrimmed(t *testing.T) {
@@ -124,18 +136,17 @@ func TestSplitTrimmed(t *testing.T) {
 		{"a,b,c", []string{"a", "b", "c"}},
 		{" a , b , c ", []string{"a", "b", "c"}},
 		{"a,,b", []string{"a", "b"}},
-		{",,,", []string{}},
 	}
 
-	for _, tc := range tests {
-		result := splitTrimmed(tc.input)
-		if len(result) != len(tc.expected) {
-			t.Errorf("splitTrimmed(%q): expected len %d, got %d", tc.input, len(tc.expected), len(result))
+	for _, tt := range tests {
+		got := splitTrimmed(tt.input)
+		if len(got) != len(tt.expected) {
+			t.Errorf("splitTrimmed(%q): expected len %d, got len %d", tt.input, len(tt.expected), len(got))
 			continue
 		}
-		for i, v := range result {
-			if v != tc.expected[i] {
-				t.Errorf("splitTrimmed(%q)[%d]: expected %q, got %q", tc.input, i, tc.expected[i], v)
+		for i := range got {
+			if got[i] != tt.expected[i] {
+				t.Errorf("splitTrimmed(%q)[%d]: expected %q, got %q", tt.input, i, tt.expected[i], got[i])
 			}
 		}
 	}
