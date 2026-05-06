@@ -49,7 +49,8 @@ func DefaultConfig() *Config {
 		Timeout:       60 * time.Second,
 		AllowedHosts:  []string{},
 		BlockedHosts:  []string{},
-		UserAgent:     "Mozilla/5.0 (compatible; Ladder/1.0)",
+		// Using a more generic Chrome UA — gets better results on sites that block bots.
+		UserAgent:     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
 		XForwardedFor: false,
 		MaxBodySize:   0,
 		ProxyURL:      nil,
@@ -124,5 +125,4 @@ func LoadFromEnv() (*Config, error) {
 	return cfg, nil
 }
 
-// Validate checks that the configuration values are sensible.
-func (c *Conf
+// 
