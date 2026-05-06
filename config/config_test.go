@@ -85,6 +85,21 @@ func TestLoadFromEnv(t *testing.T) {
 			t.Errorf("expected 2 blocked hosts, got %d", len(cfg.BlockedHosts))
 		}
 	})
+
+	// Verify that USER_AGENT env var is respected when set.
+	t.Run("reads USER_AGENT from env", func(t *testing.T) {
+		clearEnv()
+		os.Setenv("USER_AGENT", "MyCustomAgent/1.0")
+		defer os.Unsetenv("USER_AGENT")
+
+		cfg, err := LoadFromEnv()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.UserAgent != "MyCustomAgent/1.0" {
+			t.Errorf("expected user agent 'MyCustomAgent/1.0', got '%s'", cfg.UserAgent)
+		}
+	})
 }
 
 func TestSplitTrimmed(t *testing.T) {
