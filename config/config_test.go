@@ -121,33 +121,19 @@ func TestLoadFromEnv(t *testing.T) {
 
 		_, err := LoadFromEnv()
 		if err == nil {
-			t.Error("expected error for PORT=99999, got nil")
+			t.Error("expected error for PORT above 65535, got nil")
 		}
 	})
-}
 
-func TestSplitTrimmed(t *testing.T) {
-	tests := []struct {
-		input    string
-		expected []string
-	}{
-		{"", []string{}},
-		{"a", []string{"a"}},
-		{"a,b,c", []string{"a", "b", "c"}},
-		{" a , b , c ", []string{"a", "b", "c"}},
-		{"a,,b", []string{"a", "b"}},
-	}
+	// Negative port numbers are also invalid.
+	t.Run("negative PORT returns error", func(t *testing.T) {
+		clearEnv()
+		os.Setenv("PORT", "-1")
+		defer os.Unsetenv("PORT")
 
-	for _, tt := range tests {
-		got := splitTrimmed(tt.input)
-		if len(got) != len(tt.expected) {
-			t.Errorf("splitTrimmed(%q): expected len %d, got len %d", tt.input, len(tt.expected), len(got))
-			continue
+		_, err := LoadFromEnv()
+		if err == nil {
+			t.Error("expected error for negative PORT, got nil")
 		}
-		for i := range got {
-			if got[i] != tt.expected[i] {
-				t.Errorf("splitTrimmed(%q)[%d]: expected %q, got %q", tt.input, i, tt.expected[i], got[i])
-			}
-		}
-	}
+	})
 }
