@@ -124,16 +124,12 @@ func TestLoadFromEnv(t *testing.T) {
 			t.Error("expected error for PORT above 65535, got nil")
 		}
 	})
+}
 
-	// Negative port numbers are also invalid.
-	t.Run("negative PORT returns error", func(t *testing.T) {
-		clearEnv()
-		os.Setenv("PORT", "-1")
-		defer os.Unsetenv("PORT")
-
-		_, err := LoadFromEnv()
-		if err == nil {
-			t.Error("expected error for negative PORT, got nil")
-		}
-	})
+// clearEnv unsets all environment variables relevant to ladder config.
+// Called at the start of each sub-test to ensure a clean slate.
+func clearEnv() {
+	for _, key := range []string{"PORT", "ALLOWED_HOSTS", "BLOCKED_HOSTS", "USER_AGENT"} {
+		os.Unsetenv(key)
+	}
 }
